@@ -19,7 +19,7 @@ class ExampleAgent(Agent):
 
     name = "5AIChessAgent"
 
-    author = "UAntwerp"
+    author = "UAntwerp - Robbe De Wit & Elvis Los"
 
     def __init__(self, utility: Utility, time_limit_move: float):
         super().__init__(utility, time_limit_move)

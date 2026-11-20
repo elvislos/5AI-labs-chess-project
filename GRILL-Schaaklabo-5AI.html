@@ -1,0 +1,1029 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Schaaklabo 5AI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: sticky header with three views; Leren = sticky module index + long reading column. Palette borrows the green/ivory of a tournament vinyl board. */
+:root {
+  --bg: #f1f3ee;
+  --surface: #ffffff;
+  --surface-2: #e7ebe2;
+  --fg: #1d241b;
+  --muted: #5b6656;
+  --line: #d3d9cc;
+  --accent: #4d7a35;
+  --accent-ink: #ffffff;
+  --accent-soft: #e1ecd6;
+  --warn: #9a5b0b;
+  --warn-soft: #f6ead6;
+  --bad: #b23b2e;
+  --bad-soft: #f6e0dc;
+  --good: #2f7a45;
+  --good-soft: #dcefe1;
+  --sq-light: #eeeed2;
+  --sq-dark: #769656;
+  --font-display: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121611; --surface: #1a2018; --surface-2: #222a1f; --fg: #e5eadf; --muted: #9aa692;
+    --line: #313b2d; --accent: #93c46f; --accent-ink: #12210a; --accent-soft: #263420;
+    --warn: #e5a64c; --warn-soft: #33281a; --bad: #ec8273; --bad-soft: #3a211d;
+    --good: #7fcf95; --good-soft: #1d3324; --sq-light: #c9cba8; --sq-dark: #5d7a45;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121611; --surface: #1a2018; --surface-2: #222a1f; --fg: #e5eadf; --muted: #9aa692;
+  --line: #313b2d; --accent: #93c46f; --accent-ink: #12210a; --accent-soft: #263420;
+  --warn: #e5a64c; --warn-soft: #33281a; --bad: #ec8273; --bad-soft: #3a211d;
+  --good: #7fcf95; --good-soft: #1d3324; --sq-light: #c9cba8; --sq-dark: #5d7a45;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; margin: 0; }
+h2 { font-size: 1.6rem; }
+h3 { font-size: 1.12rem; margin-block-start: 1.6rem; }
+p, ul, ol { margin-block: 0.7rem; }
+li + li { margin-block-start: 0.3rem; }
+a { color: var(--accent); }
+code, kbd { font-family: var(--font-mono); font-size: 0.88em; background: var(--surface-2); padding: 0.08em 0.35em; border-radius: 4px; }
+pre { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 0.9rem 1rem; overflow-x: auto; font: 0.84rem/1.55 var(--font-mono); margin-block: 0.9rem; }
+pre code { background: none; padding: 0; font-size: inherit; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1180px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* Header */
+.site-head { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-block-end: 1px solid var(--line); }
+.site-head .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.4rem; padding-block: 0.7rem; }
+.brand { display: flex; align-items: center; gap: 0.6rem; font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; }
+.brand-board { display: grid; grid-template-columns: repeat(4, 7px); grid-template-rows: repeat(4, 7px); border-radius: 3px; overflow: hidden; }
+.brand-board i { background: var(--sq-light); }
+.brand-board i:nth-child(8n+2), .brand-board i:nth-child(8n+4), .brand-board i:nth-child(8n+5), .brand-board i:nth-child(8n+7) { background: var(--sq-dark); }
+.tabs { display: flex; gap: 0.25rem; background: var(--surface-2); padding: 0.25rem; border-radius: 999px; }
+.tab { border: 0; background: transparent; padding: 0.35rem 0.95rem; border-radius: 999px; font-weight: 500; color: var(--muted); }
+.tab[aria-selected="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
+.head-stats { margin-inline-start: auto; font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* Leren */
+.learn { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.5rem; padding-block: 2rem 4rem; }
+.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 72px); align-self: start; display: flex; flex-direction: column; gap: 0.1rem; }
+.toc-label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-block-end: 0.4rem; }
+.toc button { text-align: start; border: 0; background: none; padding: 0.3rem 0.6rem; border-radius: 6px; color: var(--muted); font-size: 0.9rem; display: flex; gap: 0.5rem; }
+.toc button:hover { background: var(--surface-2); color: var(--fg); }
+.toc button span { font-family: var(--font-mono); font-size: 0.78rem; opacity: 0.7; min-width: 1.4rem; }
+.article { min-width: 0; max-width: 72ch; }
+.intro { padding-block-end: 1.5rem; border-block-end: 1px solid var(--line); }
+.intro h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); }
+.intro p { color: var(--muted); font-size: 1.05rem; }
+.module { padding-block: 2.2rem; border-block-end: 1px solid var(--line); scroll-margin-top: 80px; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); letter-spacing: 0.04em; margin-block-end: 0.4rem; }
+.callout { border-radius: var(--radius); padding: 0.8rem 1rem; margin-block: 1rem; font-size: 0.95rem; }
+.callout strong:first-child { display: block; margin-block-end: 0.2rem; }
+.callout.warn { background: var(--warn-soft); }
+.callout.warn strong:first-child { color: var(--warn); }
+.callout.tip { background: var(--accent-soft); }
+.callout.tip strong:first-child { color: var(--accent); }
+.callout.bad { background: var(--bad-soft); }
+.callout.bad strong:first-child { color: var(--bad); }
+.table-wrap { overflow-x: auto; margin-block: 1rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: start; padding: 0.45rem 0.7rem; border-block-end: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
+.grill-link { margin-block-start: 1.2rem; border: 1px solid var(--accent); color: var(--accent); background: none; border-radius: 999px; padding: 0.35rem 1rem; font-weight: 500; font-size: 0.9rem; }
+.grill-link:hover { background: var(--accent-soft); }
+
+/* Alpha-beta demo */
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; margin-block: 1.2rem; }
+.demo-controls { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--surface-2); border-radius: 8px; padding: 0.35rem 0.8rem; font-size: 0.88rem; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.demo-toggle { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; }
+.demo-svg { overflow-x: auto; margin-block: 0.8rem; }
+.demo-svg svg { display: block; min-width: 560px; width: 100%; height: auto; }
+.demo-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.4rem; font-size: 0.88rem; font-variant-numeric: tabular-nums; }
+.demo-stats b { font-family: var(--font-mono); }
+.demo-log { max-height: 180px; overflow: auto; font: 0.78rem/1.6 var(--font-mono); background: var(--surface-2); border-radius: 8px; padding: 0.6rem 0.8rem; margin-block-start: 0.7rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; font-size: 0.8rem; color: var(--muted); margin-block-start: 0.4rem; }
+
+/* Grill */
+.grill { padding-block: 2rem 4rem; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 2rem; }
+.grill-main { min-width: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-block: 1rem; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.84rem; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.mode-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+.qcard { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1.4rem; margin-block-start: 1rem; }
+.qmeta { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.qtext { font-size: 1.15rem; font-weight: 500; margin-block: 0.8rem 1rem; }
+.options { display: grid; gap: 0.5rem; }
+.opt { text-align: start; border: 1px solid var(--line); background: var(--surface-2); border-radius: 8px; padding: 0.6rem 0.85rem; }
+.opt:hover:not(:disabled) { border-color: var(--accent); }
+.opt:disabled { cursor: default; }
+.opt.correct { background: var(--good-soft); border-color: var(--good); }
+.opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+textarea { width: 100%; min-height: 6rem; font: inherit; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; padding: 0.6rem; resize: vertical; }
+.answer { margin-block-start: 1rem; padding: 0.9rem 1rem; border-radius: 10px; background: var(--accent-soft); font-size: 0.95rem; }
+.answer h4 { margin: 0 0 0.3rem; font-family: var(--font-display); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+.rate { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block-start: 1rem; }
+.rate .btn.good { border-color: var(--good); color: var(--good); }
+.rate .btn.half { border-color: var(--warn); color: var(--warn); }
+.rate .btn.bad { border-color: var(--bad); color: var(--bad); }
+.nav-row { display: flex; justify-content: space-between; gap: 0.5rem; margin-block-start: 1.2rem; }
+.side-panel { align-self: start; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 72px); background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 1rem; }
+.side-panel h3 { margin: 0 0 0.6rem; font-size: 1rem; }
+.cat-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.2rem 0.6rem; font-size: 0.82rem; align-items: center; margin-block-end: 0.55rem; }
+.bar { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: var(--surface-2); display: flex; overflow: hidden; }
+.bar i { display: block; height: 100%; }
+.bar .g { background: var(--good); } .bar .h { background: var(--warn); } .bar .b { background: var(--bad); }
+.cat-row span:last-of-type { font-variant-numeric: tabular-nums; color: var(--muted); }
+.empty { color: var(--muted); padding: 2rem 0; }
+
+/* Roadmap */
+.roadmap { padding-block: 2rem 4rem; max-width: 820px; }
+.phase { margin-block-start: 1.8rem; }
+.phase h3 { margin: 0 0 0.3rem; }
+.phase > p { color: var(--muted); margin-block: 0 0.6rem; font-size: 0.95rem; }
+.check { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.55rem 0.7rem; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); margin-block-end: 0.4rem; }
+.check input { margin-block-start: 0.3rem; accent-color: var(--accent); width: 1.05rem; height: 1.05rem; flex: none; }
+.check label { cursor: pointer; }
+.check small { display: block; color: var(--muted); }
+.check:has(input:checked) label { color: var(--muted); text-decoration: line-through; }
+.dates { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-block: 1rem; }
+.date { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.86rem; }
+.date time { font-family: var(--font-mono); font-weight: 600; margin-inline-end: 0.4rem; }
+
+@media (max-width: 860px) {
+  .learn { grid-template-columns: minmax(0, 1fr); gap: 1rem; padding-block-start: 1rem; }
+  .toc { position: static; flex-direction: row; overflow-x: auto; gap: 0.3rem; padding-block-end: 0.4rem; }
+  .toc-label { display: none; }
+  .toc button { white-space: nowrap; background: var(--surface); border: 1px solid var(--line); }
+  .grill { grid-template-columns: minmax(0, 1fr); }
+  .side-panel { position: static; }
+  .head-stats { margin-inline-start: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<header class="site-head">
+  <div class="wrap">
+    <div class="brand"><span class="brand-board" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Schaaklabo 5AI</div>
+    <nav class="tabs" role="tablist" aria-label="Onderdelen">
+      <button class="tab" role="tab" data-view="leren" id="tab-leren">Leren</button>
+      <button class="tab" role="tab" data-view="grill" id="tab-grill">Grill</button>
+      <button class="tab" role="tab" data-view="roadmap" id="tab-roadmap">Roadmap</button>
+    </nav>
+    <div class="head-stats" id="head-stats"></div>
+  </div>
+</header>
+
+<main>
+<!-- ============ LEREN ============ -->
+<section id="view-leren" class="wrap learn" hidden>
+  <nav class="toc" id="toc" aria-label="Modules"><div class="toc-label">Modules</div></nav>
+  <article class="article">
+    <header class="intro">
+      <div class="eyebrow">Lab 4 · Chess project · 24% van je eindcijfer</div>
+      <h1>Alles wat je moet snappen om een schaakengine te bouwen én te verdedigen</h1>
+      <p>Van het framework dat je kreeg tot alpha-beta, evaluatiefuncties en de mondelinge verdediging. Elke module eindigt met een knop om dat onderdeel meteen te laten grillen.</p>
+    </header>
+
+    <section class="module" id="m-labo" data-cat="labo">
+      <div class="eyebrow">01 · Het labo</div>
+      <h2>Wat er van jullie verwacht wordt</h2>
+      <p>Lab 4 is de grootste opdracht van het vak: bouw een AI-agent die schaak speelt. De keuze van methode is vrij. De introductieslides noemen minimax/alpha-beta, Monte-Carlo Tree Search en reinforcement learning als opties.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Wat</th><th>Detail</th></tr>
+        <tr><td>Gewicht</td><td>24% van het totaal (labs samen 60%, labs 1–3 elk 12%)</td></tr>
+        <tr><td>Op te leveren</td><td>Code + rapport + mondelinge verdediging met presentatie (als groep)</td></tr>
+        <tr><td>Labsessies</td><td><time datetime="2026-11-20">20/11</time>, <time datetime="2026-11-27">27/11</time>, <time datetime="2026-12-04">4/12</time></td></tr>
+        <tr><td>Deadline</td><td>Bij het examen (datum nog niet bekend). Te laat ingediend = niet beoordeeld.</td></tr>
+        <tr><td>Individueel</td><td>Scores kunnen per persoon verschillen op basis van de verdediging</td></tr>
+      </table></div>
+      <div class="callout warn"><strong>De regel die op de slides staat</strong>"Don't use AI to blindly generate code or answers." Je moet elke regel van jullie engine kunnen uitleggen. De verdediging test precies dat: waarom deze keuze, wat doet deze functie, wat gebeurt er als je X verandert.</div>
+      <h3>Welke methode kies je?</h3>
+      <p>Voor schaak in Python is <strong>alpha-beta met iterative deepening, een goede evaluatiefunctie en quiescence search</strong> de sterkste haalbare keuze. Het is ook de methode die het dichtst bij les 08 ligt, dus je kan ze het best verdedigen. MCTS en RL komen in module 11 aan bod, samen met de reden waarom ze hier minder geschikt zijn.</p>
+      <button class="grill-link" data-grill="labo">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-framework" data-cat="framework">
+      <div class="eyebrow">02 · Het framework</div>
+      <h2>Agent, Utility, Engine</h2>
+      <p>Het framework scheidt drie verantwoordelijkheden. Zo kan je een nieuwe evaluatiefunctie testen zonder het zoekalgoritme aan te raken, en omgekeerd.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Klasse</th><th>Bestand</th><th>Verantwoordelijkheid</th></tr>
+        <tr><td><code>Agent</code></td><td><code>agents/agent.py</code></td><td>Zoekt in de spelboom. Jij implementeert <code>calculate_move(board, constraints) → Move</code>.</td></tr>
+        <tr><td><code>Utility</code></td><td><code>utilities/utility.py</code></td><td>Geeft een getal per bord: <strong>hoog = goed voor wit</strong>, laag = goed voor zwart, 0 = gelijk.</td></tr>
+        <tr><td><code>UCIEngine</code></td><td><code>engines/uci_engine.py</code></td><td>Praat het UCI-protocol met een GUI. Moet je normaal niet aanpassen.</td></tr>
+      </table></div>
+      <h3>Het UCI-protocol in vijf commando's</h3>
+      <pre><code>GUI → engine: uci                         engine → GUI: id name … / uciok
+GUI → engine: isready                     engine → GUI: readyok
+GUI → engine: ucinewgame
+GUI → engine: position startpos moves e2e4 e7e5
+GUI → engine: go wtime 300000 btime 300000 winc 2000 binc 2000
+                                          engine → GUI: bestmove g1f3</code></pre>
+      <p>De tijden in <code>go</code> staan in <strong>milliseconden</strong>. De engine stopt ze in de dict <code>constraints</code>, bijvoorbeeld <code>{'wtime': 300000, 'winc': 2000, …}</code>. Daarmee bepaal je zelf hoeveel tijd je aan een zet besteedt (module 06).</p>
+      <h3>Wat de voorbeeld-agent doet, en waarom die zo slecht speelt</h3>
+      <p><code>ExampleAgent</code> probeert elke legale zet, evalueert het bord erna en kiest de hoogste waarde. Dat is een <strong>zoekdiepte van 1 ply</strong>: hij kijkt nooit naar het antwoord van de tegenstander.</p>
+      <div class="callout bad"><strong>Uit je eigen testpartij</strong>Wit speelde <code>d1e2</code> (dame naar e2) en zwart sloeg meteen met <code>d3e2</code>. Ook <code>b2g7</code> (loper slaat pion) werd direct teruggeslagen door <code>f8g7</code>. Op diepte 1 ziet de agent "+1 pion" en mist hij dat het stuk verloren gaat. Dit is het probleem dat minimax oplost.</div>
+      <p>Drie bugs in de voorbeeldcode die je moet kennen:</p>
+      <ul>
+        <li><code>best_utility = 0</code> als startwaarde. Een zet wordt alleen gekozen als hij <em>strikt beter dan 0</em> is. Zijn alle zetten 0 (de meeste zetten slaan niets), dan blijft de willekeurige zet staan. Daarom speelt hij zo random.</li>
+        <li>De tijdslimiet wordt alleen tussen zetten gecheckt. Een trage evaluatie kan de limiet ruim overschrijden.</li>
+        <li><code>constraints: dict = {}</code> als default-argument is een gedeeld, muteerbaar object, een klassieke Python-valkuil.</li>
+      </ul>
+      <div class="callout warn"><strong>Beperkingen van <code>uci_engine.py</code></strong><code>position fen …</code> wordt niet ondersteund, dus een analyse vanaf een eigen stelling in En Croissant start altijd vanuit de beginstelling. <code>go infinite</code> en <code>stop</code> bestaan niet. Er staat een typfout <code>.spit(' ')</code> in de combo-optie. Wil je dit aanpassen, documenteer het dan in je rapport.</div>
+      <h3>python-chess: de functies die je constant gebruikt</h3>
+      <pre><code>board.legal_moves            # generator van Move-objecten
+board.push(move); board.pop()  # zet doen en terugdraaien (snel, geen kopie)
+board.turn                     # chess.WHITE (True) of chess.BLACK
+board.is_checkmate(), board.is_stalemate(), board.is_insufficient_material()
+board.is_capture(move), board.gives_check(move), board.is_check()
+board.piece_at(square), board.pieces(chess.KNIGHT, chess.WHITE)
+board.piece_type_at(move.to_square)  # welk stuk wordt geslagen?</code></pre>
+      <button class="grill-link" data-grill="framework">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-minimax" data-cat="minimax">
+      <div class="eyebrow">03 · Minimax en negamax</div>
+      <h2>Rekening houden met een tegenstander die terugvecht</h2>
+      <p>Schaak voldoet aan de aannames van les 08: deterministisch, om beurten, twee spelers, <strong>zero-sum</strong> en <strong>perfect information</strong>. MAX (wit) kiest de zet met de hoogste waarde, MIN (zwart) die met de laagste. Een zet van één speler heet een <strong>ply</strong>.</p>
+      <pre><code>def minimax(board, depth, maximizing):
+    if depth == 0 or board.is_game_over():
+        return evaluate(board)          # wit-perspectief
+    if maximizing:
+        return max(minimax_after(board, m, depth, False) for m in board.legal_moves)
+    else:
+        return min(minimax_after(board, m, depth, True) for m in board.legal_moves)</code></pre>
+      <p>Complexiteit: tijd <strong>O(b<sup>m</sup>)</strong>, ruimte <strong>O(bm)</strong>. Bij schaak is de branching factor <em>b</em> ≈ 35. Diepte 4 betekent al 35<sup>4</sup> ≈ 1,5 miljoen bladeren.</p>
+      <h3>Negamax: één functie in plaats van twee</h3>
+      <p>Omdat het zero-sum is, geldt <code>max(a, b) = −min(−a, −b)</code>. Laat de evaluatie altijd scoren <em>vanuit de speler die aan zet is</em> en draai het teken om bij elke ply:</p>
+      <pre><code>def negamax(board, depth):
+    if depth == 0 or board.is_game_over():
+        return evaluate_side_to_move(board)
+    best = -INF
+    for move in board.legal_moves:
+        board.push(move)
+        best = max(best, -negamax(board, depth - 1))
+        board.pop()
+    return best
+
+def evaluate_side_to_move(board):
+    sign = 1 if board.turn == chess.WHITE else -1
+    return sign * utility.board_value(board)   # Utility geeft wit-perspectief</code></pre>
+      <div class="callout warn"><strong>Klassieke bug</strong>Het perspectief omkeren gebeurt op precies één plek. De <code>Utility</code> blijft wit-positief, zoals het framework voorschrijft. Doe je de omkering dubbel of niet, dan speelt je engine plots de slechtst mogelijke zetten voor één kleur.</div>
+      <h3>Eindtoestanden scoren</h3>
+      <ul>
+        <li><strong>Mat</strong>: de speler aan zet staat mat, dus <code>return -MATE + ply</code> (bv. MATE = 100 000). Door <code>+ ply</code> verkiest de engine een snellere mat en stelt hij een verloren mat zo lang mogelijk uit.</li>
+        <li><strong>Pat, onvoldoende materiaal, herhaling</strong>: <code>return 0</code>.</li>
+      </ul>
+      <button class="grill-link" data-grill="minimax">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-alphabeta" data-cat="alphabeta">
+      <div class="eyebrow">04 · Alpha-beta pruning</div>
+      <h2>Hetzelfde antwoord als minimax, met een fractie van het werk</h2>
+      <p>Alpha-beta houdt twee grenzen bij langs het huidige pad:</p>
+      <ul>
+        <li><strong>α (alpha)</strong>: de beste waarde die MAX al <em>zeker</em> heeft. Denk "at least".</li>
+        <li><strong>β (beta)</strong>: de beste waarde die MIN al <em>zeker</em> heeft. Denk "at most".</li>
+      </ul>
+      <p>Zodra α ≥ β kan deze tak de uiteindelijke beslissing niet meer beïnvloeden: één van beide spelers zal hier nooit naartoe gaan. De resterende kinderen worden overgeslagen. Dat heet een <strong>cutoff</strong>.</p>
+      <pre><code>def negamax(board, depth, alpha, beta, ply=0):
+    if board.is_checkmate():
+        return -MATE + ply
+    if board.is_stalemate() or board.is_insufficient_material() or board.is_repetition(2):
+        return 0
+    if depth == 0:
+        return quiesce(board, alpha, beta)      # module 08
+    best = -INF
+    for move in ordered_moves(board):           # module 05
+        board.push(move)
+        score = -negamax(board, depth - 1, -beta, -alpha, ply + 1)
+        board.pop()
+        if score > best:
+            best = score
+        if score > alpha:
+            alpha = score
+        if alpha >= beta:
+            break                               # beta-cutoff
+    return best</code></pre>
+      <p>Let op het venster <code>(-beta, -alpha)</code>: bij negamax wisselen de grenzen van rol én teken bij elke ply.</p>
+
+      <div class="demo" id="ab-demo">
+        <div class="demo-controls">
+          <button class="btn" id="ab-classic">Voorbeeld uit de les</button>
+          <button class="btn primary" id="ab-random">Nieuwe willekeurige boom</button>
+          <label class="demo-toggle"><input type="checkbox" id="ab-order"> Perfecte zetvolgorde</label>
+        </div>
+        <div class="demo-svg" id="ab-svg"></div>
+        <div class="demo-stats" id="ab-stats"></div>
+        <div class="legend"><span>▲ MAX-knoop</span><span>▼ MIN-knoop</span><span>Doorzichtig + gestreept = gesnoeid, nooit bekeken</span></div>
+        <div class="demo-log" id="ab-log" aria-label="Verloop van alpha-beta"></div>
+      </div>
+      <p>Zet "Perfecte zetvolgorde" aan en kijk hoeveel bladeren er nog geëvalueerd worden. Dat is het hele punt van module 05.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Zetvolgorde</th><th>Tijdscomplexiteit</th><th>Gevolg</th></tr>
+        <tr><td>Slechtst mogelijk</td><td class="num">O(b<sup>m</sup>)</td><td>Even traag als minimax</td></tr>
+        <tr><td>Willekeurig</td><td class="num">≈ O(b<sup>3m/4</sup>)</td><td>Al flink beter</td></tr>
+        <tr><td>Perfect</td><td class="num">O(b<sup>m/2</sup>)</td><td>In dezelfde tijd twee keer zo diep zoeken</td></tr>
+      </table></div>
+      <button class="grill-link" data-grill="alphabeta">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-ordering" data-cat="ordering">
+      <div class="eyebrow">05 · Zetvolgorde</div>
+      <h2>Beste zetten eerst, want dan snoei je het meest</h2>
+      <p>Alpha-beta snoeit pas als het snel een goede zet vindt. Een goedkope volgorde-heuristiek levert in de praktijk vaak meer winst op dan een slimmere evaluatie.</p>
+      <ol>
+        <li><strong>Hash move / PV-move</strong>: de beste zet uit de vorige iteratie of uit de transposition table eerst.</li>
+        <li><strong>Slagzetten volgens MVV-LVA</strong> (Most Valuable Victim, Least Valuable Attacker): pion slaat dame eerst, dame slaat pion laatst.</li>
+        <li><strong>Promoties</strong>, vooral naar dame.</li>
+        <li><strong>Killer moves</strong>: rustige zetten die op dezelfde diepte eerder een cutoff gaven.</li>
+        <li><strong>History heuristic</strong>: een teller per (van, naar) die stijgt bij elke cutoff.</li>
+        <li>De rest.</li>
+      </ol>
+      <pre><code>VALUES = {chess.PAWN: 100, chess.KNIGHT: 320, chess.BISHOP: 330,
+          chess.ROOK: 500, chess.QUEEN: 900, chess.KING: 0}
+
+def move_score(board, move, hash_move):
+    if move == hash_move:
+        return 1_000_000
+    if board.is_capture(move):
+        victim = board.piece_type_at(move.to_square) or chess.PAWN  # en passant
+        attacker = board.piece_type_at(move.from_square)
+        return 100_000 + 10 * VALUES[victim] - VALUES[attacker]
+    if move.promotion:
+        return 90_000
+    return history[move.from_square][move.to_square]
+
+def ordered_moves(board, hash_move=None):
+    return sorted(board.legal_moves, key=lambda m: move_score(board, m, hash_move), reverse=True)</code></pre>
+      <div class="callout tip"><strong>Meetbaar maken voor je rapport</strong>Tel het aantal bezochte knopen per zoekdiepte, met en zonder ordering, op dezelfde testposities. Een tabel met "knopen op diepte 4: 410 000 → 38 000" is sterk bewijs bij de verdediging.</div>
+      <button class="grill-link" data-grill="ordering">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-tijd" data-cat="tijd">
+      <div class="eyebrow">06 · Iterative deepening en tijd</div>
+      <h2>Altijd een zet klaar hebben</h2>
+      <p>Je weet niet op voorhand hoe diep je binnen de tijd raakt. <strong>Iterative deepening</strong> zoekt diepte 1, dan 2, dan 3, … tot de tijd op is, en speelt de beste zet van de laatste <em>volledig</em> afgewerkte diepte.</p>
+      <ul>
+        <li>Het lijkt verspilling, maar de ondiepe zoektochten kosten weinig. De laatste diepte domineert, omdat het werk exponentieel groeit.</li>
+        <li>De beste zet van diepte <em>d</em> is de eerste zet die je op diepte <em>d+1</em> probeert. Dat geeft betere ordering en dus meer cutoffs.</li>
+      </ul>
+      <pre><code>class TimeUp(Exception): ...
+
+def calculate_move(self, board, constraints={}):
+    self.deadline = time.time() + self.time_budget(board, constraints)
+    best_move = next(iter(board.legal_moves))     # noodzet
+    for depth in range(1, 64):
+        try:
+            best_move = self.search_root(board, depth, best_move)
+        except TimeUp:
+            break                                 # onafgewerkte diepte negeren
+    return best_move
+
+# in negamax, bv. elke 1024 knopen:
+#     if time.time() > self.deadline: raise TimeUp</code></pre>
+      <div class="callout warn"><strong>Let op bij een exception</strong>Als je midden in de zoektocht een <code>TimeUp</code> gooit, staan er nog <code>push</code>-zetten op het bord. Gebruik <code>try/finally: board.pop()</code> of zoek op een <code>board.copy()</code> aan de wortel. Anders geef je een zet terug voor een stelling die niet meer klopt.</div>
+      <h3>Tijdsbudget uit de UCI-klok</h3>
+      <pre><code>def time_budget(self, board, c):
+    if 'movetime' in c:
+        return c['movetime'] / 1000 * 0.95
+    remaining = c.get('wtime' if board.turn else 'btime')
+    if remaining is None:
+        return self.time_limit_move               # bv. 5.0 s uit example_engine
+    increment = c.get('winc' if board.turn else 'binc', 0)
+    return remaining / 1000 / 30 + increment / 1000 * 0.8</code></pre>
+      <p>Python-overhead en het opstarten kosten tijd. Hou een veiligheidsmarge aan: wie door zijn vlag gaat, verliest.</p>
+      <button class="grill-link" data-grill="tijd">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-eval" data-cat="eval">
+      <div class="eyebrow">07 · De evaluatiefunctie</div>
+      <h2>EVAL(s): een schatting van wie er wint</h2>
+      <p>Je kan niet tot het einde zoeken, dus aan de rand van de zoekboom schat je de waarde. Een goede EVAL is <strong>snel</strong> en <strong>sterk gecorreleerd met de winkans</strong>. Meestal is ze een <strong>gewogen lineaire som van features</strong>. Waarden worden uitgedrukt in <strong>centipionnen</strong> (cp): 100 cp = één pion.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Feature</th><th>Idee</th><th>Typische orde</th></tr>
+        <tr><td>Materiaal</td><td>P 100, N 320, B 330, R 500, Q 900</td><td class="num">dominant</td></tr>
+        <tr><td>Piece-square tables</td><td>Bonus per stuk per veld: paard in het centrum, pion die oprukt, koning veilig achter pionnen</td><td class="num">±10–50 cp</td></tr>
+        <tr><td>Loperpaar</td><td>Twee lopers samen zijn meer waard</td><td class="num">+30–50 cp</td></tr>
+        <tr><td>Pionstructuur</td><td>Straf voor dubbel- en geïsoleerde pionnen, bonus voor vrijpionnen</td><td class="num">±10–80 cp</td></tr>
+        <tr><td>Mobiliteit</td><td>Aantal zetten per stuk (duur om te berekenen!)</td><td class="num">±2–5 cp per zet</td></tr>
+        <tr><td>Koningsveiligheid</td><td>Pionschild, aanvallers rond de koning</td><td class="num">±0–100 cp</td></tr>
+      </table></div>
+      <h3>Tapered evaluation</h3>
+      <p>Een stuk is niet overal evenveel waard. De koning moet in het middenspel verstopt blijven, maar in het eindspel moet hij naar het centrum. Bereken daarom twee scores (middenspel en eindspel) en meng die op basis van een <strong>fase</strong> die daalt naarmate er stukken van het bord gaan:</p>
+      <pre><code>phase = min(24, 1*knights + 1*bishops + 2*rooks + 4*queens)   # 24 = beginstelling
+score = (mg_score * phase + eg_score * (24 - phase)) / 24</code></pre>
+      <p>Dit is een voorbeeld van een <strong>niet-lineaire</strong> evaluatie, zoals les 08 aanhaalt. Bekende tabellen zijn de PeSTO-tabellen. Gebruik je ze, vermeld dan de bron in je rapport.</p>
+      <div class="callout tip"><strong>Snelheid telt</strong>Elke extra feature kost tijd per knoop, dus minder diepte. Een evaluatie die 2× trager is, moet duidelijk beter spelen om dat verlies goed te maken. Meet het (module 13).</div>
+      <button class="grill-link" data-grill="eval">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-quiescence" data-cat="quiescence">
+      <div class="eyebrow">08 · Quiescence search en het horizoneffect</div>
+      <h2>Niet evalueren midden in een slagwisseling</h2>
+      <p>Stop je op diepte 4 net nadat je dame een pion sloeg, dan ziet de evaluatie "+1 pion". Dat de dame op de volgende zet verloren gaat, ligt achter de <strong>horizon</strong>. Dat is het horizoneffect.</p>
+      <p><strong>Quiescence search</strong> zoekt aan de rand verder, maar alleen naar <em>slagzetten</em> (en eventueel promoties), tot de stelling "rustig" is:</p>
+      <pre><code>def quiesce(board, alpha, beta):
+    stand_pat = evaluate_side_to_move(board)
+    if stand_pat >= beta:
+        return stand_pat               # al goed genoeg: niet slaan mag ook
+    alpha = max(alpha, stand_pat)
+    for move in ordered_captures(board):     # MVV-LVA
+        board.push(move)
+        score = -quiesce(board, -beta, -alpha)
+        board.pop()
+        if score >= beta:
+            return score
+        alpha = max(alpha, score)
+    return alpha</code></pre>
+      <ul>
+        <li><strong>Stand pat</strong>: de speler aan zet hoeft niet te slaan. De huidige evaluatie is dus een ondergrens.</li>
+        <li>Sta je <strong>schaak</strong>, dan geldt stand pat niet: je moet een uitweg zoeken, dus genereer alle zetten.</li>
+        <li>Het horizoneffect verdwijnt hiermee niet helemaal. Les 08 noemt ook <strong>singular extensions</strong>: een opvallend sterke tak een ply dieper zoeken.</li>
+      </ul>
+      <div class="callout tip"><strong>Waarom dit zoveel uitmaakt</strong>Zonder quiescence hangt een engine stukken op, net zoals de voorbeeld-agent op diepte 1, maar dan steeds op de rand van zijn zoekdiepte. Het is meestal de grootste sprong in speelsterkte na alpha-beta zelf.</div>
+      <button class="grill-link" data-grill="quiescence">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-tt" data-cat="tt">
+      <div class="eyebrow">09 · Transposition table</div>
+      <h2>Dezelfde stelling niet twee keer doorrekenen</h2>
+      <p>Via verschillende zetvolgordes kom je in dezelfde stelling terecht (<code>e4 e5 Nf3</code> en <code>Nf3 e5 e4</code>). Dat heet een <strong>transpositie</strong>. Een transposition table (TT) slaat per stelling het resultaat op.</p>
+      <ul>
+        <li><strong>Sleutel</strong>: een Zobrist-hash, een 64-bit getal per stelling. In python-chess: <code>chess.polyglot.zobrist_hash(board)</code>.</li>
+        <li><strong>Waarde</strong>: diepte, score, <em>vlag</em> en beste zet.</li>
+      </ul>
+      <div class="table-wrap"><table>
+        <tr><th>Vlag</th><th>Wanneer</th><th>Betekenis van de score</th></tr>
+        <tr><td><code>EXACT</code></td><td>α &lt; score &lt; β</td><td>Exacte waarde</td></tr>
+        <tr><td><code>LOWER</code></td><td>Beta-cutoff (score ≥ β)</td><td>Echte waarde is minstens zo hoog</td></tr>
+        <tr><td><code>UPPER</code></td><td>Geen zet verbeterde α</td><td>Echte waarde is hoogstens zo hoog</td></tr>
+      </table></div>
+      <p>Een opgeslagen resultaat mag je alleen gebruiken als de opgeslagen <strong>diepte ≥ de gevraagde diepte</strong>. Ook als dat niet zo is, blijft de opgeslagen beste zet waardevol: probeer hem eerst (module 05).</p>
+      <div class="callout warn"><strong>Valkuilen</strong>Mat-scores zijn afhankelijk van <code>ply</code>, dus pas ze aan bij opslaan en ophalen. Herhalingen hangen af van de geschiedenis, niet alleen van de stelling. Begrens de grootte van de tabel, anders loopt je geheugen vol.</div>
+      <button class="grill-link" data-grill="tt">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-boek" data-cat="boek">
+      <div class="eyebrow">10 · Opzoeken in plaats van zoeken</div>
+      <h2>Openingsboek en eindspeltabellen</h2>
+      <p>Les 08 noemt dit "search versus lookup": aan het begin en einde van een partij zijn er weinig stellingen, dus je kan ze opzoeken.</p>
+      <ul>
+        <li><strong>Openingsboek</strong>: <code>chess.polyglot.open_reader("book.bin")</code> geeft gewogen zetten voor bekende openingsstellingen. Kost geen zoektijd en voorkomt rare openingen.</li>
+        <li><strong>Eindspeltabellen (Syzygy)</strong>: <code>chess.syzygy.open_tablebase(pad)</code> geeft de perfecte uitkomst voor stellingen met weinig stukken. De bestanden zijn groot. Voor 3–5 stukken gaat het om honderden MB.</li>
+      </ul>
+      <div class="callout warn"><strong>Wees eerlijk in je rapport</strong>Een boek maakt je engine sterker zonder dat jullie AI daarvoor iets doet. Vermeld duidelijk wat uit een boek komt en wat jullie eigen zoekwerk is, en zorg dat de engine ook zonder boek werkt.</div>
+      <button class="grill-link" data-grill="boek">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-mcts" data-cat="mcts">
+      <div class="eyebrow">11 · Alternatieven: MCTS en RL</div>
+      <h2>Waarom niet Monte-Carlo of reinforcement learning?</h2>
+      <p><strong>MCTS</strong> bouwt een boom op met vier stappen per iteratie: <strong>selection</strong>, <strong>expansion</strong>, <strong>simulation</strong> (een playout tot het einde) en <strong>back-propagation</strong>. Bij selectie kiest het kinderen met UCB1:</p>
+      <pre><code>UCB1(n) = U(n) / N(n)  +  C · sqrt( ln N(parent) / N(n) )
+          exploitation        exploration</code></pre>
+      <ul>
+        <li><strong>Sterk</strong> bij een zeer hoge branching factor (Go) en als er geen goede evaluatiefunctie bestaat. Het heeft alleen de spelregels nodig.</li>
+        <li><strong>Zwak voor schaak in Python</strong>: willekeurige playouts zeggen weinig over een schaakstelling, en één playout van ±80 zetten kost in Python veel tijd. Schaak heeft scherpe tactiek, waarbij één zet alles verandert. Les 08 zegt het ook: MCTS kan zo'n zet missen.</li>
+      </ul>
+      <p><strong>Reinforcement learning</strong> (zoals AlphaZero) combineert MCTS met een neuraal netwerk dat de policy en de waarde leert via self-play. Dat vraagt enorme rekenkracht, veel meer dan jullie in drie weken hebben.</p>
+      <div class="callout tip"><strong>Voor de verdediging</strong>Je moet niet alles bouwen, maar je moet je keuze kunnen motiveren. "Alpha-beta, omdat schaak een goede handgemaakte evaluatie toelaat, de branching factor beheersbaar is en tactiek precieze rekenkracht vraagt" is een sterk antwoord.</div>
+      <button class="grill-link" data-grill="mcts">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-perf" data-cat="perf">
+      <div class="eyebrow">12 · Snelheid in Python</div>
+      <h2>Meer knopen per seconde = dieper zoeken</h2>
+      <p>Een pure Python-engine op python-chess haalt grofweg enkele duizenden tot een paar tienduizenden knopen per seconde. Elke factor 2 telt.</p>
+      <ul>
+        <li><strong>Profileer eerst</strong>: <code>python -m cProfile -s cumtime -m scripts.play_self</code>. Optimaliseer pas waar de tijd echt naartoe gaat.</li>
+        <li>Gebruik <code>push</code>/<code>pop</code>, geen <code>board.copy()</code> per knoop.</li>
+        <li><code>board.is_game_over()</code> is duur. Check alleen wat je nodig hebt, en pas als er geen legale zetten zijn.</li>
+        <li>Maak <code>list(board.legal_moves)</code> één keer per knoop, niet meerdere keren.</li>
+        <li>Lees de stukken via <code>board.pieces_mask</code> of bitboards (<code>board.occupied_co[chess.WHITE]</code>) in plaats van een lus over 64 velden.</li>
+        <li>Een incrementele evaluatie, die bij elke zet bijwerkt in plaats van alles te herberekenen, is sneller maar moeilijker. Doe dat pas als de rest werkt.</li>
+      </ul>
+      <button class="grill-link" data-grill="perf">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-testen" data-cat="testen">
+      <div class="eyebrow">13 · Testen en meten</div>
+      <h2>Bewijzen dat een wijziging je engine sterker maakt</h2>
+      <ul>
+        <li><strong>Tactische testposities</strong>: "mat in 1/2" en "win een stuk". Je engine moet ze op een kleine diepte vinden. Dit zijn je unit tests.</li>
+        <li><strong>Versie A tegen versie B</strong>: speel veel partijen (≥ 50), wissel de kleuren af en start vanuit verschillende openingen. Eén partij zegt niets.</li>
+        <li><strong>Tegen Stockfish</strong>: <code>Skill Level</code> 0–20, of <code>UCI_LimitStrength</code> + <code>UCI_Elo</code> (vanaf ±1320). Zo krijg je een ruwe Elo-schatting.</li>
+        <li><strong>Interne metingen</strong>: bereikte diepte per zet, knopen per seconde, aantal cutoffs, TT-hit rate.</li>
+      </ul>
+      <pre><code># in play_engine.py
+black_player.configure({'Skill Level': 1})              # al aanwezig
+black_player.configure({'UCI_LimitStrength': True, 'UCI_Elo': 1400})</code></pre>
+      <div class="callout tip"><strong>Reproduceerbaar</strong>De slides vragen "correct, readable, and reproducible code". Leg je testscripts en resultaten vast in de repo, zodat de docent ze kan herhalen.</div>
+      <button class="grill-link" data-grill="testen">Grill dit onderdeel →</button>
+    </section>
+
+    <section class="module" id="m-verdediging" data-cat="verdediging">
+      <div class="eyebrow">14 · Rapport en verdediging</div>
+      <h2>Wat er in je rapport en presentatie moet staan</h2>
+      <ol>
+        <li><strong>Gekozen aanpak en waarom</strong>: alpha-beta tegenover MCTS en RL, met de argumenten uit module 11.</li>
+        <li><strong>Architectuur</strong>: welke klassen jullie toevoegden binnen Agent/Utility/Engine.</li>
+        <li><strong>Zoekalgoritme</strong>: negamax, alpha-beta, iterative deepening, quiescence en ordering, elk met één zin over het nut.</li>
+        <li><strong>Evaluatiefunctie</strong>: de features, de gewichten en hoe je eraan kwam.</li>
+        <li><strong>Experimenten met cijfers</strong>: knopen per diepte met en zonder ordering, winstpercentage tegen versies of Stockfish-niveaus.</li>
+        <li><strong>Beperkingen en wat je nog zou doen.</strong></li>
+        <li><strong>Bronnen</strong>: les 08, Russell &amp; Norvig, chessprogramming.org, PeSTO-tabellen, en elk boek of tabel dat je gebruikt.</li>
+      </ol>
+      <h3>Vragen die je zeker kan verwachten</h3>
+      <ul>
+        <li>Teken een kleine boom en voer alpha-beta uit. Welke takken worden gesnoeid?</li>
+        <li>Waarom geeft alpha-beta hetzelfde resultaat als minimax?</li>
+        <li>Wat doet deze regel in jullie code? Wat gebeurt er als je hem weglaat?</li>
+        <li>Hoe gaan jullie om met de tijd? Wat als de tijd midden in een diepte op is?</li>
+        <li>Wat is het horizoneffect, en hoe lossen jullie het (deels) op?</li>
+        <li>Wie deed wat? Individuele scores kunnen verschillen, dus ken ook het deel van je partner.</li>
+      </ul>
+      <button class="grill-link" data-grill="verdediging">Grill dit onderdeel →</button>
+    </section>
+  </article>
+</section>
+
+<!-- ============ GRILL ============ -->
+<section id="view-grill" class="wrap grill" hidden>
+  <div class="grill-main">
+    <h1 style="font-size:1.8rem">Grill-sessie</h1>
+    <p style="color:var(--muted);margin-block:0.4rem 0">Bij meerkeuze zie je meteen of je juist zat. Bij open vragen formuleer je eerst zelf een antwoord, bekijk je het modelantwoord en geef je jezelf een eerlijke score. Je voortgang wordt bewaard in deze browser.</p>
+    <div class="filters" id="cat-filters" aria-label="Filter per onderdeel"></div>
+    <div class="mode-row">
+      <button class="btn" id="mode-weak">Alleen wat ik nog niet kan</button>
+      <button class="btn" id="mode-shuffle">Schudden</button>
+      <button class="btn" id="mode-reset">Voortgang wissen</button>
+      <span id="reset-confirm" hidden style="font-size:0.88rem">Zeker? <button class="btn" id="reset-yes">Ja, wis alles</button> <button class="btn" id="reset-no">Annuleer</button></span>
+    </div>
+    <div id="qcard-host"></div>
+  </div>
+  <aside class="side-panel" aria-label="Voortgang">
+    <h3>Voortgang per onderdeel</h3>
+    <div id="cat-progress"></div>
+  </aside>
+</section>
+
+<!-- ============ ROADMAP ============ -->
+<section id="view-roadmap" class="wrap roadmap" hidden>
+  <h1 style="font-size:1.8rem">Roadmap naar een sterke engine</h1>
+  <p style="color:var(--muted)">Een volgorde waarin elke stap meetbaar winst oplevert. Vink af wat klaar is. Dat wordt bewaard in deze browser, niet gedeeld met je partner.</p>
+  <div class="dates">
+    <span class="date"><time datetime="2026-11-20">20/11</time>Labsessie 1</span>
+    <span class="date"><time datetime="2026-11-27">27/11</time>Labsessie 2</span>
+    <span class="date"><time datetime="2026-12-04">4/12</time>Labsessie 3</span>
+    <span class="date"><time>TBD</time>Deadline bij het examen</span>
+  </div>
+  <div id="roadmap-list"></div>
+</section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- storage (best effort) ---------- */
+  const STORE_KEY = "schaaklabo-v1";
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function saveState() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable: progress lives in memory only */ }
+  }
+  const state = Object.assign({ ratings: {}, roadmap: {} }, loadState());
+
+  /* ---------- categories ---------- */
+  const CATS = [
+    ["labo", "Het labo"], ["framework", "Framework"], ["minimax", "Minimax"], ["alphabeta", "Alpha-beta"],
+    ["ordering", "Zetvolgorde"], ["tijd", "Tijd & ID"], ["eval", "Evaluatie"], ["quiescence", "Quiescence"],
+    ["tt", "Transposition table"], ["boek", "Boek & tabellen"], ["mcts", "MCTS & RL"], ["perf", "Snelheid"],
+    ["testen", "Testen"], ["verdediging", "Verdediging"]
+  ];
+  const CAT_NAME = Object.fromEntries(CATS);
+
+  /* ---------- questions ---------- */
+  const Q = [
+    { c: "labo", t: "mc", q: "Hoeveel weegt lab 4 door in je eindcijfer?", o: ["12%", "24%", "36%", "60%"], a: 1, e: "Lab 4 telt voor 24%. De labs samen zijn 60%, en labs 1 tot 3 tellen elk voor 12%." },
+    { c: "labo", t: "mc", q: "Wat lever je op voor lab 4?", o: ["Alleen code", "Code + kort rapport + mondelinge ondervraging", "Code + rapport + mondelinge verdediging met presentatie", "Alleen een presentatie"], a: 2, e: "Lab 4 vraagt code, een rapport en een mondelinge verdediging met presentatie, als groep. Labs 1 tot 3 hadden een kort rapport en een ondervraging." },
+    { c: "labo", t: "open", q: "Waarom kunnen jij en je partner een verschillende score krijgen voor hetzelfde project?", e: "Volgens de evaluatieregels is individuele differentiatie mogelijk op basis van de mondelinge verdediging. Wie zijn deel of het geheel niet kan uitleggen, scoort lager. Daarom moet je ook het werk van je partner begrijpen." },
+
+    { c: "framework", t: "mc", q: "Wat geeft Utility.board_value terug voor een stelling waarin zwart een dame voor staat?", o: ["Een groot positief getal", "Een groot negatief getal", "Positief als zwart aan zet is", "Altijd een getal tussen 0 en 1"], a: 1, e: "De Utility scoort altijd vanuit wit: hoog is goed voor wit, laag is goed voor zwart. Een dame voor zwart is dus sterk negatief, ongeacht wie aan zet is." },
+    { c: "framework", t: "open", q: "Waarom hing de voorbeeld-agent in je testpartij zijn dame op met d1e2?", e: "ExampleAgent zoekt maar 1 ply diep: hij evalueert het bord na zijn eigen zet en kijkt nooit naar het antwoord van de tegenstander. Dat d3xe2 de dame wint, ligt buiten zijn blikveld. Minimax en alpha-beta lossen dat op door de tegenstander mee te nemen." },
+    { c: "framework", t: "mc", q: "De voorbeeld-agent start met best_utility = 0. Wat is daarvan het gevolg?", o: ["Hij kiest altijd de eerste legale zet", "Een zet wordt alleen gekozen als die strikt beter dan 0 is, anders blijft de willekeurige zet staan", "Hij kan geen stukken slaan", "Hij crasht als zwart"], a: 1, e: "Alleen value > 0 vervangt de startzet. De meeste zetten veranderen het materiaal niet (waarde 0), dus blijft de random gekozen zet staan. Een correcte start is -oneindig." },
+    { c: "framework", t: "mc", q: "In welke eenheid staan wtime en movetime in het UCI-commando go?", o: ["Seconden", "Milliseconden", "Microseconden", "Zetten"], a: 1, e: "UCI gebruikt milliseconden. Deel door 1000 voor je met time.time() vergelijkt." },
+    { c: "framework", t: "open", q: "Noem twee beperkingen van uci_engine.py die je in de praktijk kunnen hinderen.", e: "1) 'position fen ...' wordt niet ondersteund, dus analyse vanaf een eigen stelling werkt niet. 2) 'go infinite' en 'stop' bestaan niet: de engine blokkeert tot calculate_move terugkeert. Er staat ook een typfout .spit() in de combo-optie, en input().split(' ') breekt bij dubbele spaties." },
+    { c: "framework", t: "mc", q: "Waarom gebruik je in de zoekboom board.push en board.pop in plaats van board.copy()?", o: ["copy() bestaat niet in python-chess", "push/pop is veel sneller omdat er geen volledig nieuw bord-object gemaakt wordt", "pop() valideert de zet", "Alleen push houdt de zetgeschiedenis bij"], a: 1, e: "Een kopie per knoop kost geheugen en tijd. Met push/pop wijzig je hetzelfde bord en draai je het terug: dat scheelt veel knopen per seconde." },
+
+    { c: "minimax", t: "mc", q: "Wat is de tijdscomplexiteit van minimax met branching factor b en diepte m?", o: ["O(bm)", "O(b^m)", "O(m^b)", "O(b^(m/2))"], a: 1, e: "Minimax bezoekt alle knopen: O(b^m) tijd. De ruimte is O(bm), omdat het depth-first werkt." },
+    { c: "minimax", t: "open", q: "Leg negamax uit. Waarom mag dat bij schaak?", e: "Schaak is zero-sum: wat goed is voor de ene speler, is even slecht voor de andere. Dus max(a,b) = -min(-a,-b). In plaats van aparte MAX- en MIN-functies laat je de evaluatie altijd scoren vanuit de speler aan zet, en neem je bij elke ply het negatief van de score van het kind." },
+    { c: "minimax", t: "mc", q: "Waarom return je bij mat -MATE + ply in plaats van gewoon -MATE?", o: ["Om overflow te vermijden", "Zodat de engine een snellere mat verkiest en een verloren mat zo lang mogelijk uitstelt", "Omdat python-chess het zo verwacht", "Om pat van mat te onderscheiden"], a: 1, e: "Een mat dichter bij de wortel krijgt een extremere score. De winnende kant kiest zo de kortste mat. Zonder ply-correctie kan een engine eindeloos rond een gewonnen stelling draaien zonder ooit mat te zetten." },
+    { c: "minimax", t: "mc", q: "Welke score geef je aan pat (stalemate)?", o: ["+MATE", "-MATE", "0", "De materiaalbalans"], a: 2, e: "Pat is remise, dus 0. Een engine die achter staat, kan pat bewust opzoeken. Daarom moet je het correct herkennen." },
+    { c: "minimax", t: "open", q: "Je Utility geeft scores vanuit wit, maar negamax heeft scores vanuit de speler aan zet nodig. Waar en hoe los je dat op?", e: "Op één plek: aan de bladeren (evaluate_side_to_move). Daar vermenigvuldig je met +1 als wit aan zet is en met -1 als zwart aan zet is. Doe je dat ook nog ergens anders, dan klopt het teken niet meer en speelt één kleur de slechtste zetten." },
+
+    { c: "alphabeta", t: "mc", q: "Wat betekent alpha in alpha-beta pruning?", o: ["De beste waarde die MIN al zeker heeft", "De beste waarde die MAX al zeker heeft langs het pad (at least)", "De diepte van de huidige knoop", "Het aantal gesnoeide takken"], a: 1, e: "Alpha is de ondergrens voor MAX ('at least'), beta de bovengrens die MIN al kan afdwingen ('at most')." },
+    { c: "alphabeta", t: "open", q: "Waarom geeft alpha-beta exact dezelfde zet als minimax?", e: "Er wordt alleen gesnoeid als bewezen is dat een tak de beslissing hoger in de boom niet kan beïnvloeden: zodra alpha ≥ beta zal een van de spelers deze tak nooit kiezen, want hij heeft elders al iets beters. Er wordt dus nooit een tak weggelaten die de minimax-waarde van de wortel zou veranderen." },
+    { c: "alphabeta", t: "mc", q: "Met perfecte zetvolgorde wordt alpha-beta O(b^(m/2)). Wat betekent dat praktisch?", o: ["Je zoekt half zo diep", "Je kan in dezelfde tijd ongeveer twee keer zo diep zoeken", "Het geheugen halveert", "Het werkt alleen op even diepte"], a: 1, e: "b^(m/2) = (√b)^m: de effectieve branching factor daalt van ~35 naar ~6. Met hetzelfde aantal knopen haal je dus ongeveer de dubbele diepte." },
+    { c: "alphabeta", t: "mc", q: "In negamax met alpha-beta roep je het kind aan als -negamax(board, depth-1, ?, ?). Welk venster?", o: ["(alpha, beta)", "(-alpha, -beta)", "(-beta, -alpha)", "(beta, alpha)"], a: 2, e: "Vanuit het perspectief van de tegenstander worden de grenzen omgedraaid én van teken gewisseld: (-beta, -alpha)." },
+    { c: "alphabeta", t: "open", q: "Klassieke boom uit de les: MAX-wortel met drie MIN-kinderen. Bladeren: [3, 12, 8], [2, 4, 6], [14, 5, 2]. Wat is de waarde van de wortel, en welke bladeren worden gesnoeid?", e: "Eerste MIN-knoop = 3, dus alpha = 3. Tweede MIN-knoop: eerste blad 2 ≤ alpha, dus deze MIN-knoop wordt hoogstens 2. Bladeren 4 en 6 worden gesnoeid. Derde MIN-knoop: 14, dan 5, dan 2, dus geen snoei (de 2 komt pas als laatste). Waarde van de wortel = 3. Probeer het in de demo onder Leren → Alpha-beta." },
+
+    { c: "ordering", t: "mc", q: "Wat betekent MVV-LVA?", o: ["Most Valuable Victim, Least Valuable Attacker", "Minimal Value Variation, Low Value Alpha", "Move Value Vector, Last Visited Alternative", "Maximum Visit, Least Visited Action"], a: 0, e: "Sorteer slagzetten zodat het waardevolste geslagen stuk eerst komt, en bij gelijk slachtoffer de goedkoopste aanvaller. Pion slaat dame komt dus vóór dame slaat dame." },
+    { c: "ordering", t: "open", q: "Waarom levert betere zetvolgorde zoveel op, terwijl het niets aan de evaluatie verandert?", e: "Alpha-beta snoeit alleen als het vroeg een goede zet vindt. Wordt de beste zet eerst geprobeerd, dan stijgt alpha meteen en geven de volgende zetten sneller een cutoff. Zo zakt het aantal knopen van richting O(b^m) naar O(b^(m/2)). Met dezelfde tijd zoek je dus dieper, en dat maakt de engine sterker." },
+    { c: "ordering", t: "mc", q: "Wat is een killer move?", o: ["Een zet die mat geeft", "Een rustige (niet-slaande) zet die op dezelfde diepte in een broer-tak een cutoff gaf", "De beste zet uit het openingsboek", "Een zet die de koning aanvalt"], a: 1, e: "Killer moves zijn rustige zetten die elders op dezelfde ply een beta-cutoff veroorzaakten. Ze zijn vaak ook hier goed, dus probeer ze vroeg." },
+
+    { c: "tijd", t: "open", q: "Leg iterative deepening uit. Waarom is het geen verspilling om diepte 1, 2 en 3 opnieuw te zoeken?", e: "Je zoekt diepte 1, dan 2, enz., tot de tijd op is, en speelt de beste zet van de laatste volledige diepte. Het werk groeit exponentieel, dus de laatste iteratie domineert de totale tijd. Bovendien geeft de vorige iteratie de beste zet (PV) die je eerst probeert, wat de ordering verbetert. Daardoor is ID vaak zelfs sneller dan meteen op de einddiepte zoeken." },
+    { c: "tijd", t: "mc", q: "De tijd is op halverwege diepte 6. Welke zet speel je?", o: ["De beste zet tot nu toe in diepte 6", "De beste zet van diepte 5, de laatste volledige diepte", "Een willekeurige zet", "De eerste legale zet"], a: 1, e: "Een onafgewerkte diepte heeft niet alle zetten vergeleken, dus het resultaat is onbetrouwbaar. Gebruik de laatste volledige diepte. Een gangbare uitzondering: als de onafgewerkte diepte al een betere zet vond dan de PV, kan je die gebruiken, maar dat moet je wel kunnen uitleggen." },
+    { c: "tijd", t: "open", q: "Je gooit een TimeUp-exception diep in de recursie. Welke bug ligt op de loer, en hoe vermijd je die?", e: "Er staan nog push()-zetten op het bord die nooit gepopt worden. Het bord is dan niet meer de echte stelling, en de engine kan een illegale of foute zet teruggeven. Oplossing: try/finally rond push/pop, of aan de wortel op board.copy() zoeken." },
+    { c: "tijd", t: "mc", q: "wtime = 60000, winc = 1000, wit aan zet. Hoeveel tijd geeft de formule remaining/30 + inc·0,8 ongeveer?", o: ["2,0 s", "2,8 s", "60 s", "0,8 s"], a: 1, e: "60 s / 30 = 2 s, plus 1 s × 0,8 = 0,8 s, samen ±2,8 s." },
+
+    { c: "eval", t: "mc", q: "Wat is een centipion?", o: ["Een honderdste van een pionwaarde (100 cp = 1 pion)", "Een pion in het centrum", "De waarde van 100 pionnen", "Een eenheid van zoektijd"], a: 0, e: "Evaluaties gebruiken centipionnen zodat je met gehele getallen kan rekenen: P = 100, N ≈ 320, B ≈ 330, R = 500, Q = 900." },
+    { c: "eval", t: "open", q: "Wat is een piece-square table en waarom helpt die?", e: "Een tabel met 64 waarden per stuktype: een bonus of straf afhankelijk van het veld. Een paard in het centrum krijgt een bonus, een paard aan de rand een straf, opgerukte pionnen een bonus, enz. Het is goedkoop (opzoeken) en codeert positionele kennis, zodat de engine stukken ontwikkelt in plaats van ze te laten staan." },
+    { c: "eval", t: "open", q: "Wat is tapered evaluation? Geef een concreet voorbeeld.", e: "Je berekent een middenspel- en een eindspelscore en mengt ze op basis van de spelfase (de hoeveelheid resterend materiaal). Voorbeeld: de koning moet in het middenspel veilig achter zijn pionnen blijven, maar in het eindspel naar het centrum om mee te vechten. Eén vaste tabel kan niet allebei." },
+    { c: "eval", t: "mc", q: "Volgens les 08 heeft een goede evaluatiefunctie twee eigenschappen. Welke?", o: ["Exact en volledig", "Snel te berekenen en sterk gecorreleerd met de winkans", "Lineair en symmetrisch", "Gebaseerd op een neuraal netwerk en getraind"], a: 1, e: "Ze moet snel zijn (zodat je dieper kan zoeken) en sterk gecorreleerd met de werkelijke kans om te winnen." },
+    { c: "eval", t: "open", q: "Je voegt mobiliteit toe aan de evaluatie, maar de engine speelt slechter. Hoe kan dat?", e: "Mobiliteit berekenen is duur (legale zetten genereren per stuk). Als de evaluatie daardoor 2× trager wordt, zoek je minder diep, en dat kost meer speelsterkte dan de feature oplevert. Daarnaast kan het gewicht slecht gekozen zijn. Meet het met A/B-partijen en bekijk de bereikte diepte." },
+
+    { c: "quiescence", t: "open", q: "Wat is het horizoneffect? Geef een schaakvoorbeeld.", e: "Bij een vaste zoekdiepte ziet de engine niet wat er net voorbij de laatste ply gebeurt. Voorbeeld: op de laatste ply slaat je dame een gedekte pion. De evaluatie ziet +1 pion, maar op de volgende zet gaat de dame verloren. Of de engine stelt een onvermijdelijk verlies uit met zinloze tussenzetten, zodat het net achter de horizon valt." },
+    { c: "quiescence", t: "mc", q: "Welke zetten worden in quiescence search typisch bekeken?", o: ["Alle legale zetten", "Alleen slagzetten (en eventueel promoties)", "Alleen koningszetten", "Alleen zetten uit het openingsboek"], a: 1, e: "Alleen 'lawaaierige' zetten zoals slagen en promoties, tot de stelling rustig is. Zo eindigt de evaluatie nooit midden in een slagwisseling." },
+    { c: "quiescence", t: "open", q: "Wat is stand pat, en waarom mag dat niet als je schaak staat?", e: "Stand pat: de speler aan zet hoeft niet te slaan, dus de huidige evaluatie is een ondergrens. Is die al ≥ beta, dan stop je meteen. Sta je schaak, dan moet je reageren en is 'niets doen' geen geldige optie. De statische evaluatie is dan geen ondergrens, dus moet je alle uitwegen zoeken." },
+
+    { c: "tt", t: "mc", q: "Welke functie in python-chess geeft een Zobrist-hash van een stelling?", o: ["board.fen()", "hash(board)", "chess.polyglot.zobrist_hash(board)", "board.zobrist()"], a: 2, e: "chess.polyglot.zobrist_hash(board) geeft een 64-bit sleutel. board.fen() werkt ook als sleutel, maar is trager en groter." },
+    { c: "tt", t: "open", q: "Waarom sla je naast de score ook een vlag (EXACT/LOWER/UPPER) op in de transposition table?", e: "Door alpha-beta is een score niet altijd exact. Bij een beta-cutoff weet je alleen dat de waarde minstens zo hoog is (LOWER). Verbeterde geen enkele zet alpha, dan weet je alleen dat ze hoogstens zo hoog is (UPPER). Bij het opzoeken mag je de score alleen gebruiken als die vlag binnen het huidige venster een beslissing toelaat." },
+    { c: "tt", t: "mc", q: "Je vindt een TT-entry op diepte 3, maar je zoekt nu op diepte 5. Wat doe je?", o: ["De score gebruiken", "De entry negeren", "De score niet gebruiken, maar de opgeslagen beste zet wel eerst proberen", "De entry verwijderen"], a: 2, e: "Een ondiepere zoektocht is niet betrouwbaar genoeg voor de score, maar de beste zet is vaak nog steeds goed. Die eerst proberen verbetert de ordering." },
+
+    { c: "boek", t: "open", q: "Wat bedoelt les 08 met 'search versus lookup', en hoe pas je dat toe bij schaak?", e: "Aan het begin en einde van een partij zijn er weinig, vaak terugkerende stellingen. Die kan je beter opzoeken dan doorzoeken. Bij schaak: een openingsboek (polyglot .bin) voor de eerste zetten, en eindspeltabellen (Syzygy) voor stellingen met weinig stukken." },
+    { c: "boek", t: "mc", q: "Waarom moet je in je rapport duidelijk vermelden dat je een openingsboek gebruikt?", o: ["Omdat het verboden is", "Omdat de sterkte dan niet van jullie eigen zoekalgoritme komt en dat eerlijk moet blijken", "Omdat het boek altijd fouten bevat", "Omdat de GUI het anders niet laadt"], a: 1, e: "Een boek is externe kennis. De beoordeling gaat over jullie AI, dus maak duidelijk wat waarvandaan komt en zorg dat de engine ook zonder boek werkt." },
+
+    { c: "mcts", t: "mc", q: "Wat zijn de vier stappen van MCTS?", o: ["Selection, expansion, simulation, back-propagation", "Search, evaluate, prune, return", "Explore, exploit, expand, evaluate", "Initialize, rollout, update, select"], a: 0, e: "Selection (afdalen met UCB1), expansion (een nieuwe knoop toevoegen), simulation (playout tot het einde), back-propagation (het resultaat naar boven doorgeven)." },
+    { c: "mcts", t: "open", q: "Wat stellen de twee termen in UCB1 voor?", e: "U(n)/N(n) is de exploitation-term: het gemiddelde resultaat van die knoop. C·√(ln N(parent)/N(n)) is de exploration-term: die is groot voor knopen die weinig bezocht zijn. C bepaalt de balans tussen kansrijke zetten verder uitdiepen en weinig bekeken zetten verkennen." },
+    { c: "mcts", t: "open", q: "Geef twee argumenten waarom alpha-beta voor dit schaakproject beter past dan MCTS.", e: "1) Willekeurige playouts zijn bij schaak weinig informatief en duur in Python, dus je haalt te weinig simulaties. 2) Schaak is tactisch scherp: één zet kan alles veranderen, en MCTS kan zo'n zet missen (les 08). Alpha-beta rekent die precies door. 3) Er bestaat goede handgemaakte evaluatiekennis, en de branching factor (~35) is beheersbaar, anders dan bij Go." },
+
+    { c: "perf", t: "mc", q: "Wat is de eerste stap als je engine te traag is?", o: ["Alles herschrijven in C", "Profileren met cProfile om te zien waar de tijd echt naartoe gaat", "De evaluatie weglaten", "De zoekdiepte vastzetten op 2"], a: 1, e: "Optimaliseer met bewijs. cProfile toont welke functies de meeste tijd kosten, bv. is_game_over of een dure evaluatie." },
+    { c: "perf", t: "open", q: "Noem drie concrete manieren om meer knopen per seconde te halen met python-chess.", e: "Bijvoorbeeld: push/pop in plaats van board.copy(); niet board.is_game_over() per knoop maar alleen checken wanneer nodig; legal_moves één keer in een lijst zetten; bitboards (board.pieces_mask, occupied_co) gebruiken in plaats van over 64 velden te lussen; dure features zoals mobiliteit vermijden of vereenvoudigen; incrementele evaluatie." },
+
+    { c: "testen", t: "open", q: "Je denkt dat versie B sterker is dan versie A. Hoe bewijs je dat overtuigend?", e: "Speel veel partijen (minstens tientallen) tussen A en B, met afwisselende kleuren en verschillende startopeningen, onder dezelfde tijdslimiet. Rapporteer winst/remise/verlies en de score. Eén of twee partijen zijn ruis. Vul aan met interne metingen (bereikte diepte, knopen/s) en tactische testposities." },
+    { c: "testen", t: "mc", q: "Hoe maak je Stockfish zwakker om tegen te testen?", o: ["Minder tijd geven is de enige optie", "Met Skill Level (0–20) of UCI_LimitStrength + UCI_Elo", "Door het openingsboek te verwijderen", "Dat kan niet"], a: 1, e: "Stockfish heeft de opties Skill Level en UCI_LimitStrength/UCI_Elo. play_engine.py zet al Skill Level 1." },
+
+    { c: "verdediging", t: "open", q: "Oefen je pitch: leg in 60 seconden uit hoe jullie engine een zet kiest.", e: "Sterk antwoord: \"We gebruiken negamax met alpha-beta pruning binnen iterative deepening. We zoeken diepte per diepte tot het tijdsbudget uit de UCI-klok op is, en spelen de beste zet van de laatste volledige diepte. Zetten worden geordend (hash move, MVV-LVA, killers), zodat we veel snoeien. Aan de rand doet quiescence search slagzetten tot de stelling rustig is, tegen het horizoneffect. De evaluatie is materiaal plus piece-square tables, tapered tussen midden- en eindspel.\" Pas aan aan wat jullie echt bouwden." },
+    { c: "verdediging", t: "open", q: "De docent wijst een regel in jullie alpha-beta aan: 'if alpha >= beta: break'. Wat zeg je?", e: "Dat is de cutoff. Alpha is wat de speler aan zet al zeker heeft, beta wat de tegenstander elders al kan afdwingen. Is alpha ≥ beta, dan zal de tegenstander deze stelling nooit toelaten, want hij heeft al een beter alternatief. De resterende zetten kunnen de beslissing niet meer veranderen, dus we stoppen. Weglaten geeft hetzelfde resultaat, maar met minimax-snelheid." },
+    { c: "verdediging", t: "mc", q: "Wat hoort er zeker in de experimentensectie van je rapport?", o: ["Alleen screenshots van gewonnen partijen", "Meetbare vergelijkingen, bv. knopen per diepte met/zonder ordering en winstpercentages tussen versies", "De volledige broncode", "Een lijst van alle openingen"], a: 1, e: "Cijfers die aantonen dat elke techniek iets oplevert, met reproduceerbare scripts. Dat maakt je keuzes verdedigbaar." }
+  ];
+  Q.forEach((q, i) => { q.id = q.c + "-" + i; });
+
+  /* ---------- views / hash routing ---------- */
+  const VIEWS = ["leren", "grill", "roadmap"];
+  function showView(view) {
+    if (!VIEWS.includes(view)) view = "leren";
+    VIEWS.forEach(v => {
+      document.getElementById("view-" + v).hidden = v !== view;
+      document.getElementById("tab-" + v).setAttribute("aria-selected", String(v === view));
+    });
+    if (view === "grill") renderGrill();
+  }
+  function routeFromHash() { showView(location.hash.slice(1)); }
+  document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
+    if (location.hash === "#" + btn.dataset.view) routeFromHash(); else location.hash = btn.dataset.view;
+    window.scrollTo(0, 0);
+  }));
+  window.addEventListener("hashchange", routeFromHash);
+
+  /* ---------- TOC ---------- */
+  const toc = document.getElementById("toc");
+  document.querySelectorAll(".module").forEach((mod, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    const num = document.createElement("span"); num.textContent = String(i + 1).padStart(2, "0");
+    b.append(num, document.createTextNode(CAT_NAME[mod.dataset.cat]));
+    b.addEventListener("click", () => mod.scrollIntoView());
+    toc.append(b);
+  });
+  document.querySelectorAll(".grill-link").forEach(b => b.addEventListener("click", () => {
+    grill.filter = b.dataset.grill; grill.weakOnly = false; grill.index = 0; grill.order = null;
+    location.hash = "grill"; window.scrollTo(0, 0);
+  }));
+
+  /* ---------- header stats ---------- */
+  function updateHeadStats() {
+    const rated = Object.values(state.ratings);
+    const good = rated.filter(r => r === "good").length;
+    document.getElementById("head-stats").textContent = `${good}/${Q.length} vragen onder de knie`;
+  }
+
+  /* ---------- grill ---------- */
+  const grill = { filter: "all", weakOnly: false, index: 0, order: null, revealed: false, answered: null };
+  function activeQuestions() {
+    let list = grill.order ? grill.order.map(id => Q.find(q => q.id === id)) : Q.slice();
+    if (grill.filter !== "all") list = list.filter(q => q.c === grill.filter);
+    if (grill.weakOnly) list = list.filter(q => state.ratings[q.id] !== "good");
+    return list;
+  }
+  function setRating(q, rating) {
+    state.ratings[q.id] = rating; saveState(); updateHeadStats(); renderProgress();
+  }
+  function renderFilters() {
+    const host = document.getElementById("cat-filters");
+    host.textContent = "";
+    [["all", "Alles"]].concat(CATS).forEach(([key, label]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.textContent = label;
+      b.setAttribute("aria-pressed", String(grill.filter === key));
+      b.addEventListener("click", () => { grill.filter = key; grill.index = 0; renderGrill(); });
+      host.append(b);
+    });
+    const weak = document.getElementById("mode-weak");
+    weak.textContent = grill.weakOnly ? "Toon alle vragen" : "Alleen wat ik nog niet kan";
+  }
+  function renderProgress() {
+    const host = document.getElementById("cat-progress");
+    host.textContent = "";
+    CATS.forEach(([key, label]) => {
+      const qs = Q.filter(q => q.c === key);
+      const counts = { good: 0, half: 0, bad: 0 };
+      qs.forEach(q => { const r = state.ratings[q.id]; if (r) counts[r]++; });
+      const row = document.createElement("div"); row.className = "cat-row";
+      const name = document.createElement("span"); name.textContent = label;
+      const num = document.createElement("span"); num.textContent = `${counts.good}/${qs.length}`;
+      const bar = document.createElement("div"); bar.className = "bar";
+      [["g", counts.good], ["h", counts.half], ["b", counts.bad]].forEach(([cls, n]) => {
+        const seg = document.createElement("i"); seg.className = cls; seg.style.width = (n / qs.length * 100) + "%"; bar.append(seg);
+      });
+      row.append(name, num, bar); host.append(row);
+    });
+  }
+  function renderGrill() {
+    renderFilters(); renderProgress();
+    const host = document.getElementById("qcard-host");
+    host.textContent = "";
+    const list = activeQuestions();
+    if (!list.length) {
+      const p = document.createElement("p"); p.className = "empty";
+      p.textContent = grill.weakOnly ? "Niets meer te herhalen in deze selectie. Alles staat op 'kon ik'." : "Geen vragen in deze selectie.";
+      host.append(p); return;
+    }
+    if (grill.index >= list.length) grill.index = 0;
+    const q = list[grill.index];
+    grill.revealed = false; grill.answered = null;
+
+    const card = document.createElement("div"); card.className = "qcard";
+    const meta = document.createElement("div"); meta.className = "qmeta";
+    const left = document.createElement("span"); left.textContent = `${CAT_NAME[q.c]} · ${q.t === "mc" ? "meerkeuze" : "open vraag"}`;
+    const right = document.createElement("span"); right.textContent = `${grill.index + 1} / ${list.length}`;
+    meta.append(left, right);
+    const text = document.createElement("div"); text.className = "qtext"; text.textContent = q.q;
+    card.append(meta, text);
+
+    const answer = document.createElement("div"); answer.className = "answer"; answer.hidden = true;
+    const ah = document.createElement("h4"); ah.textContent = q.t === "mc" ? "Uitleg" : "Modelantwoord";
+    const ap = document.createElement("p"); ap.style.margin = "0"; ap.textContent = q.e;
+    answer.append(ah, ap);
+
+    if (q.t === "mc") {
+      const opts = document.createElement("div"); opts.className = "options";
+      q.o.forEach((label, i) => {
+        const b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.textContent = label;
+        b.addEventListener("click", () => {
+          opts.querySelectorAll(".opt").forEach((ob, j) => {
+            ob.disabled = true;
+            if (j === q.a) ob.classList.add("correct");
+          });
+          if (i !== q.a) b.classList.add("wrong");
+          answer.hidden = false;
+          setRating(q, i === q.a ? "good" : "bad");
+        });
+        opts.append(b);
+      });
+      card.append(opts, answer);
+    } else {
+      const ta = document.createElement("textarea");
+      ta.id = "draft-answer"; ta.placeholder = "Formuleer eerst je eigen antwoord, alsof de docent het vraagt…";
+      ta.setAttribute("aria-label", "Jouw antwoord");
+      const reveal = document.createElement("button"); reveal.type = "button"; reveal.className = "btn primary"; reveal.textContent = "Toon modelantwoord";
+      reveal.style.marginBlockStart = "0.7rem";
+      const rate = document.createElement("div"); rate.className = "rate"; rate.hidden = true;
+      [["good", "Kon ik"], ["half", "Half"], ["bad", "Kon ik niet"]].forEach(([key, label]) => {
+        const rb = document.createElement("button"); rb.type = "button"; rb.className = "btn " + key; rb.textContent = label;
+        rb.addEventListener("click", () => { setRating(q, key); next(); });
+        rate.append(rb);
+      });
+      reveal.addEventListener("click", () => { answer.hidden = false; rate.hidden = false; reveal.hidden = true; });
+      card.append(ta, reveal, answer, rate);
+    }
+
+    const nav = document.createElement("div"); nav.className = "nav-row";
+    const prev = document.createElement("button"); prev.type = "button"; prev.className = "btn"; prev.textContent = "← Vorige";
+    prev.addEventListener("click", () => { grill.index = (grill.index - 1 + list.length) % list.length; renderGrill(); });
+    const nxt = document.createElement("button"); nxt.type = "button"; nxt.className = "btn"; nxt.textContent = "Volgende →";
+    nxt.addEventListener("click", next);
+    nav.append(prev, nxt);
+    card.append(nav);
+    host.append(card);
+
+    function next() {
+      const fresh = activeQuestions();
+      if (grill.weakOnly && state.ratings[q.id] === "good") { /* item left the list; keep index */ }
+      else grill.index++;
+      if (grill.index >= fresh.length) grill.index = 0;
+      renderGrill();
+    }
+  }
+  document.getElementById("mode-weak").addEventListener("click", () => { grill.weakOnly = !grill.weakOnly; grill.index = 0; renderGrill(); });
+  document.getElementById("mode-shuffle").addEventListener("click", () => {
+    const ids = Q.map(q => q.id);
+    for (let i = ids.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [ids[i], ids[j]] = [ids[j], ids[i]]; }
+    grill.order = ids; grill.index = 0; renderGrill();
+  });
+  document.getElementById("mode-reset").addEventListener("click", () => { document.getElementById("reset-confirm").hidden = false; });
+  document.getElementById("reset-no").addEventListener("click", () => { document.getElementById("reset-confirm").hidden = true; });
+  document.getElementById("reset-yes").addEventListener("click", () => {
+    state.ratings = {}; saveState(); updateHeadStats();
+    document.getElementById("reset-confirm").hidden = true; grill.index = 0; renderGrill();
+  });
+
+  /* ---------- roadmap ---------- */
+  const ROADMAP = [
+    { phase: "Fundament", note: "Eerst een correcte engine, dan pas een sterke.", items: [
+      ["r1", "Negamax met correct perspectief en mat/pat-scores", "Test: vindt mat-in-1 en mat-in-2 op diepte 2–4"],
+      ["r2", "Alpha-beta toevoegen", "Test: dezelfde zet als negamax, maar minder knopen. Leg beide aantallen vast."],
+      ["r3", "Knopenteller en logging van diepte en tijd per zet", "Nodig voor alle metingen hierna"]
+    ]},
+    { phase: "Sneller en dieper", note: "Elke stap levert direct extra diepte op.", items: [
+      ["r4", "Zetvolgorde: MVV-LVA + promoties", "Meet het aantal knopen voor en na"],
+      ["r5", "Iterative deepening met tijdsbudget uit wtime/winc/movetime", "Test: nooit door de vlag in En Croissant; het bord is na een timeout nog correct"],
+      ["r6", "Quiescence search met stand pat", "Test: hangt geen stukken meer op aan de rand van de zoekdiepte"],
+      ["r7", "PV-move eerst, killer moves, history heuristic", ""],
+      ["r8", "Transposition table met Zobrist-hash en EXACT/LOWER/UPPER", "Meet de TT-hit rate"]
+    ]},
+    { phase: "Beter spelen", note: "Nu pas de evaluatie verfijnen, en elke wijziging testen met A/B-partijen.", items: [
+      ["r9", "Piece-square tables (bron vermelden)", ""],
+      ["r10", "Tapered evaluation middenspel/eindspel", ""],
+      ["r11", "Loperpaar, pionstructuur, koningsveiligheid", "Eén feature per keer, met meting"],
+      ["r12", "Optioneel: openingsboek / eindspeltabellen, duidelijk gedocumenteerd", ""]
+    ]},
+    { phase: "Opleveren", note: "Reken genoeg tijd voor het rapport en de presentatie.", items: [
+      ["r13", "Testscripts in de repo: tactische posities, A/B-match, Stockfish-niveaus", "Reproduceerbaar"],
+      ["r14", "Rapport: aanpak, architectuur, eval, experimenten met cijfers, beperkingen, bronnen", ""],
+      ["r15", "Presentatie + elk van jullie kan alle code uitleggen", "Oefen met de Grill-tab"]
+    ]}
+  ];
+  function renderRoadmap() {
+    const host = document.getElementById("roadmap-list");
+    host.textContent = "";
+    ROADMAP.forEach(block => {
+      const sec = document.createElement("section"); sec.className = "phase";
+      const h = document.createElement("h3"); h.textContent = block.phase;
+      const p = document.createElement("p"); p.textContent = block.note;
+      sec.append(h, p);
+      block.items.forEach(([id, label, hint]) => {
+        const row = document.createElement("div"); row.className = "check";
+        const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "rm-" + id; cb.checked = !!state.roadmap[id];
+        cb.addEventListener("change", () => { state.roadmap[id] = cb.checked; saveState(); });
+        const lab = document.createElement("label"); lab.htmlFor = cb.id; lab.textContent = label;
+        if (hint) { const s = document.createElement("small"); s.textContent = hint; lab.append(s); }
+        row.append(cb, lab); sec.append(row);
+      });
+      host.append(sec);
+    });
+  }
+
+  /* ---------- alpha-beta demo ---------- */
+  const CLASSIC = [[3, 12, 8], [2, 4, 6], [14, 5, 2]];
+  let demoTree = null;
+  function buildTree(spec) {
+    return Array.isArray(spec) ? { children: spec.map(buildTree) } : { value: spec };
+  }
+  function randomTree(depth, branching) {
+    if (depth === 0) return { value: Math.floor(Math.random() * 20) };
+    return { children: Array.from({ length: branching }, () => randomTree(depth - 1, branching)) };
+  }
+  function cloneTree(n) { return n.children ? { children: n.children.map(cloneTree) } : { value: n.value }; }
+  function minimaxValue(n, isMax) {
+    if (!n.children) return n.value;
+    const vals = n.children.map(c => minimaxValue(c, !isMax));
+    n.mm = isMax ? Math.max(...vals) : Math.min(...vals);
+    return n.mm;
+  }
+  function sortPerfect(n, isMax) {
+    if (!n.children) return;
+    n.children.forEach(c => sortPerfect(c, !isMax));
+    n.children.sort((a, b) => {
+      const va = a.children ? a.mm : a.value, vb = b.children ? b.mm : b.value;
+      return isMax ? vb - va : va - vb;
+    });
+  }
+  function fmt(v) { return v === Infinity ? "+∞" : v === -Infinity ? "−∞" : String(v); }
+  function markPruned(n) { n.pruned = true; (n.children || []).forEach(markPruned); }
+  function alphaBeta(n, alpha, beta, isMax, log, stats, label) {
+    n.visited = true;
+    if (!n.children) { stats.leaves++; return n.value; }
+    let v = isMax ? -Infinity : Infinity;
+    for (let i = 0; i < n.children.length; i++) {
+      const child = n.children[i];
+      const val = alphaBeta(child, alpha, beta, !isMax, log, stats, label + "." + (i + 1));
+      if (isMax) { v = Math.max(v, val); alpha = Math.max(alpha, v); }
+      else { v = Math.min(v, val); beta = Math.min(beta, v); }
+      if (alpha >= beta && i < n.children.length - 1) {
+        n.children.slice(i + 1).forEach(markPruned);
+        log.push(`${isMax ? "MAX" : "MIN"} ${label}: α=${fmt(alpha)} ≥ β=${fmt(beta)} → ${n.children.length - i - 1} tak(ken) gesnoeid`);
+        break;
+      }
+    }
+    n.ab = v; n.alpha = alpha; n.beta = beta;
+    log.push(`${isMax ? "MAX" : "MIN"} ${label} = ${fmt(v)}   (α=${fmt(alpha)}, β=${fmt(beta)})`);
+    return v;
+  }
+  function countLeaves(n) { return n.children ? n.children.reduce((s, c) => s + countLeaves(c), 0) : 1; }
+  function depthOf(n) { return n.children ? 1 + depthOf(n.children[0]) : 0; }
+
+  function renderDemo() {
+    const tree = cloneTree(demoTree);
+    minimaxValue(tree, true);
+    if (document.getElementById("ab-order").checked) { sortPerfect(tree, true); }
+    const log = [], stats = { leaves: 0 };
+    const rootVal = alphaBeta(tree, -Infinity, Infinity, true, log, stats, "wortel");
+
+    const total = countLeaves(tree), depth = depthOf(tree);
+    const leafGap = 34, levelGap = 78, padX = 22, padTop = 26;
+    const width = padX * 2 + (total - 1) * leafGap, height = padTop + depth * levelGap + 46;
+    let leafIndex = 0;
+    function layout(n, level) {
+      n.y = padTop + level * levelGap;
+      if (!n.children) { n.x = padX + leafIndex++ * leafGap; return; }
+      n.children.forEach(c => layout(c, level + 1));
+      n.x = (n.children[0].x + n.children[n.children.length - 1].x) / 2;
+    }
+    layout(tree, 0);
+
+    const NS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", `Alpha-beta boom met wortelwaarde ${rootVal}`);
+    function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.append(e); return e; }
+    const cs = getComputedStyle(document.documentElement);
+    const col = name => cs.getPropertyValue(name).trim();
+
+    function draw(n, isMax) {
+      (n.children || []).forEach(c => {
+        el("line", { x1: n.x, y1: n.y, x2: c.x, y2: c.y, stroke: col("--line"), "stroke-width": 1.5, "stroke-dasharray": c.pruned ? "4 4" : "none", opacity: c.pruned ? 0.5 : 1 }, svg);
+        draw(c, !isMax);
+      });
+      const op = n.pruned ? 0.3 : 1;
+      if (n.children) {
+        const s = 13;
+        const pts = isMax ? `${n.x},${n.y - s} ${n.x - s},${n.y + s * 0.8} ${n.x + s},${n.y + s * 0.8}` : `${n.x},${n.y + s} ${n.x - s},${n.y - s * 0.8} ${n.x + s},${n.y - s * 0.8}`;
+        el("polygon", { points: pts, fill: n.pruned ? col("--surface-2") : col("--accent"), stroke: col("--accent"), "stroke-width": 1.5, opacity: op }, svg);
+        if (!n.pruned) {
+          const t = el("text", { x: n.x + 17, y: n.y + 4, "font-size": 12, "font-family": "JetBrains Mono, monospace", "font-weight": 600, fill: col("--fg") }, svg);
+          t.textContent = fmt(n.ab);
+        }
+      } else {
+        el("rect", { x: n.x - 13, y: n.y - 11, width: 26, height: 22, rx: 5, fill: n.pruned ? col("--surface-2") : col("--surface"), stroke: n.pruned ? col("--line") : col("--fg"), "stroke-width": 1.2, "stroke-dasharray": n.pruned ? "3 3" : "none", opacity: n.pruned ? 0.55 : 1 }, svg);
+        const t = el("text", { x: n.x, y: n.y + 4, "text-anchor": "middle", "font-size": 11, "font-family": "JetBrains Mono, monospace", fill: col("--fg"), opacity: n.pruned ? 0.45 : 1 }, svg);
+        t.textContent = n.value;
+      }
+    }
+    draw(tree, true);
+    const host = document.getElementById("ab-svg"); host.textContent = ""; host.append(svg);
+
+    const saved = total - stats.leaves;
+    const statsHost = document.getElementById("ab-stats"); statsHost.textContent = "";
+    [["Waarde wortel", fmt(rootVal)], ["Bladeren geëvalueerd", `${stats.leaves} / ${total}`], ["Gesnoeid", `${saved} (${Math.round(saved / total * 100)}%)`], ["Minimax geeft", fmt(tree.mm)]].forEach(([k, v]) => {
+      const s = document.createElement("span"); s.append(document.createTextNode(k + ": ")); const b = document.createElement("b"); b.textContent = v; s.append(b); statsHost.append(s);
+    });
+    const logHost = document.getElementById("ab-log"); logHost.textContent = "";
+    log.forEach(line => { const d = document.createElement("div"); d.textContent = line; logHost.append(d); });
+  }
+  document.getElementById("ab-classic").addEventListener("click", () => { demoTree = buildTree(CLASSIC); renderDemo(); });
+  document.getElementById("ab-random").addEventListener("click", () => { demoTree = randomTree(3, 3); renderDemo(); });
+  document.getElementById("ab-order").addEventListener("change", renderDemo);
+  const themeObserver = new MutationObserver(() => demoTree && renderDemo());
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => demoTree && renderDemo()); } catch (e) { /* older browsers: theme switch needs a re-render click */ }
+
+  /* ---------- boot ---------- */
+  demoTree = buildTree(CLASSIC);
+  renderDemo();
+  renderRoadmap();
+  updateHeadStats();
+  routeFromHash();
+})();
+</script>
+
+</body></html>
